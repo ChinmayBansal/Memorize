@@ -8,22 +8,71 @@
 import SwiftUI
 
 struct ContentView: View {
+    var emojis = ["🍔","🍕","🍟","🌮","🍆","🍎","🍌","🍉","🍇","🍍","🥚","🥕","🥐","🥩","🍿","🍫","🍭","🥥","🥞","🌭","🥗","🥓","🥨","🥖"]
+    @State var emojiCount = 6
     var body: some View {
-        ZStack(alignment: .center ){
-            RoundedRectangle(cornerRadius: 20.0)
-                    .stroke(lineWidth: 3.0)
-            Text("Hello, World!")
-                  
-               
+        VStack  {
+            HStack {
+                ForEach(emojis[0..<emojiCount], id: \.self ) { emoji in
+                    CardView(content: emoji)
+                }
+            }
+            Spacer()
+            HStack {
+                remove
+                Spacer()
+                add
+            }
+            .font(.largeTitle)
+            .padding(.horizontal)
         }
         .padding(.horizontal)
         .foregroundColor(.green)
-//        return RoundedRectangle(cornerRadius: 20.0)
-//            .stroke(lineWidth: 3.0)
-//            .padding(.horizontal)
-//            .foregroundColor(/*@START_MENU_TOKEN@*/.green/*@END_MENU_TOKEN@*/)
-//        Text("Hello, World!").
     }
+    
+    var remove: some View {
+        Button {
+            if emojiCount > 1 {
+                emojiCount -= 1
+            }
+        } label: {
+            Image(systemName: "minus.circle")
+        }
+    }
+    
+    var add: some View {
+        Button {
+            if emojiCount < emojis.count {
+                emojiCount += 1
+            }
+            
+        } label: {
+            Image(systemName: "plus.circle")
+        }
+    }
+}
+
+struct CardView: View {
+    @State var isFaceUp: Bool = true
+    var content: String
+    
+    var body: some View {
+        ZStack {
+            let shape = RoundedRectangle(cornerRadius: 20.0)
+            if isFaceUp {
+               shape.fill().foregroundColor(.white)
+               shape.stroke(lineWidth: 3.0)
+                Text(content).font(.largeTitle)
+            } else {
+                shape.fill()
+            }
+           
+        }
+        .onTapGesture {
+            isFaceUp = !isFaceUp
+        }
+    }
+    
 }
 
 
@@ -75,5 +124,10 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .preferredColorScheme(.dark)
+            .previewDevice("iPhone 12 Pro")
+        ContentView()
+            .preferredColorScheme(.light)
+            .previewDevice("iPhone 12 Pro")
     }
 }
