@@ -36,31 +36,28 @@ struct CardView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                let shape = RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius)
-                if card.isFaceUp {
-                    shape.fill().foregroundColor(.white)
-                    shape.strokeBorder(lineWidth: DrawingConstants.lineWitdth)
-                    Pie(startAngle: Angle(degrees: 0-90), endAngle: Angle(degrees: 110-90))
-                        .padding(DrawingConstants.ciclePadding)
-                        .opacity(DrawingConstants.cicleOpacity)
-                    Text(card.content).font(font(in: geometry.size))
-                } else if card.isMatched {
-                    shape.opacity(0)
-                } else {
-                    shape.fill()
-                }
+                Pie(startAngle: Angle(degrees: 0-90), endAngle: Angle(degrees: 110-90))
+                    .padding(DrawingConstants.ciclePadding)
+                    .opacity(DrawingConstants.cicleOpacity)
+                Text(card.content)
+                    .rotationEffect(Angle.degrees(card.isMatched ? 360 : 0))
+                    .animation(.linear(duration:1).repeatForever(autoreverses: false))
+                    .font(Font.system(size: 32))
+                    .scaleEffect(scale(thatFits: geometry.size))
             }
+            
+            .cardify(isFaceUp: card.isFaceUp)
         }
     }
     
-    private func font(in size: CGSize) -> Font {
-        Font.system(size: min(size.width, size.height) * DrawingConstants.fontScale)
+    private func scale(thatFits size: CGSize) -> CGFloat {
+        min(size.width, size.height) / (DrawingConstants.fontSize / DrawingConstants.fontScale)
     }
     
+    
     private struct DrawingConstants {
-        static let cornerRadius: CGFloat = 10
-        static let lineWitdth: CGFloat = 3
         static let fontScale: CGFloat = 0.7
+        static let fontSize: CGFloat = 32
         static let ciclePadding: CGFloat = 5
         static let cicleOpacity: CGFloat = 0.5
     }
@@ -112,10 +109,12 @@ struct CardView: View {
 
 
 
+
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let game = EmojiMemoryGame()
-        game.choose(game.cards.first!)
+        
         return EmojiMemoryView(game: game)
            
     }
