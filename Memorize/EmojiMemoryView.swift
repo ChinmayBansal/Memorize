@@ -11,21 +11,44 @@ struct EmojiMemoryView: View {
     @ObservedObject var game: EmojiMemoryGame
     
     var body: some View {
-
+        
+        VStack {
+            gameBody
+            shuffleCards
+        }
+        .padding()
+    }
+    
+    var gameBody: some View {
         AspectVGrid(items: game.cards, aspectRatio: 2/3) { card in
             if card.isMatched && !card.isFaceUp {
-                Rectangle().opacity(0)
+                Color.clear
             } else {
                 CardView(card: card)
                     .padding(4)
+                    .transition(AnyTransition.asymmetric(insertion: .scale, removal: .opacity))
                     .onTapGesture {
-                        game.choose(card)
+                        withAnimation{
+                            game.choose(card)
+
+                        }
                     }
             }
             
         }
+        .onAppear {
+            //
+        }
         .foregroundColor(.green)
-        .padding(.horizontal)
+    }
+    
+    var shuffleCards: some View {
+        Button("Shuffle") {
+            withAnimation {
+                game.shuffleCards()
+
+            }
+        }
     }
 }
 
@@ -62,50 +85,6 @@ struct CardView: View {
         static let cicleOpacity: CGFloat = 0.5
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
